@@ -115,6 +115,9 @@ con run()
 ![](https://github.com/cattus09/ARSW_lab_1/blob/main/PARALLELISM-JAVA_THREADS-INTRODUCTION_BLACKLISTSEARCH/FOTOS/ARSW%20IMG2.png?raw=true)
 
 
+*con start() obtenemos una salida desordenada, mientras que con run() obtenemos una salida donde se muestra una secuencia de numeros ordenadas e hilos desde el primero hasta el tercero, esto es debido a que start() los hilos se ejecutan en paralelo y cada hilo compite por el procesamiento de la CPU, lo que causa que cada vez que ejecutemos el programa, este tendra una salida diferente, por lo que es un sistema no determinista, mientras que con run(), los hilos se ejecutan en secuencia segun su orden en el metodo main(), por lo que no hay concurrencia y cada hilo se ejecuta secuencialmente.*
+
+
 **Parte II - Ejercicio Black List Search**
 
 
