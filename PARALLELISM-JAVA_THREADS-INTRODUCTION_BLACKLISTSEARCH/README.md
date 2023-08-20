@@ -103,6 +103,14 @@ public class CountThreadsMain {
 
 ```
 
+
+con start()
+![image](https://github.com/cattus09/ARSW_lab_1/assets/98556822/f7fedbf7-df45-49b5-ae02-be4d9fab0a73)
+
+con run()
+![](https://github.com/cattus09/ARSW_lab_1/blob/main/PARALLELISM-JAVA_THREADS-INTRODUCTION_BLACKLISTSEARCH/FOTOS/ARSW%20IMG2.png?raw=true)
+
+
 **Parte II - Ejercicio Black List Search**
 
 
