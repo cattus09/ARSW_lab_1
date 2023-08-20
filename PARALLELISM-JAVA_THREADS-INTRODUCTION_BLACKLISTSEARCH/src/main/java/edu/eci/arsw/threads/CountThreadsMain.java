@@ -24,11 +24,11 @@ public class CountThreadsMain {
 
  
 
-        hilo1.start();
+        // hilo1.start();
 
-        hilo2.start();
+        // hilo2.start();
 
-        hilo3.start();
+        // hilo3.start();
 
  
 
