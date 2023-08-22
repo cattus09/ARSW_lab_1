@@ -40,7 +40,4 @@ public class BlackListThread extends Thread {
         return ocurrencesCount;
     }
 
-    
-
-
 }
