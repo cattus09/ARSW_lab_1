@@ -115,7 +115,7 @@ con run()
 ![](https://github.com/cattus09/ARSW_lab_1/blob/main/PARALLELISM-JAVA_THREADS-INTRODUCTION_BLACKLISTSEARCH/FOTOS/ARSW%20IMG2.png?raw=true)
 
 
-*con start() obtenemos una salida desordenada, mientras que con run() obtenemos una salida donde se muestra una secuencia de numeros ordenadas e hilos desde el primero hasta el tercero, esto es debido a que start() los hilos se ejecutan en paralelo y cada hilo compite por el procesamiento de la CPU, lo que causa que cada vez que ejecutemos el programa, este tendra una salida diferente, por lo que es un sistema no determinista, mientras que con run(), los hilos se ejecutan en secuencia segun su orden en el metodo main(), por lo que no hay concurrencia y cada hilo se ejecuta secuencialmente.*
+*con start() obtenemos una salida desordenada, mientras que con run() obtenemos una salida donde se muestra una secuencia de números ordenadas e hilos desde el primero hasta el tercero, esto es debido a que start() los hilos se ejecutan en paralelo y cada hilo compite por el procesamiento de la CPU, lo que causa que cada vez que ejecutemos el programa, este tendrá una salida diferente, por lo que es un sistema no determinista, mientras que con run(), los hilos se ejecutan en secuencia según su orden en el metodo main(), por lo que no hay concurrencia y cada hilo se ejecuta secuencialmente.*
 
 
 **Parte II - Ejercicio Black List Search**
@@ -379,9 +379,19 @@ Con lo anterior, y con los tiempos de ejecución dados, haga una gráfica de tie
 
 	![](img/ahmdahls.png), donde _S(n)_ es el mejoramiento teórico del desempeño, _P_ la fracción paralelizable del algoritmo, y _n_ el número de hilos, a mayor _n_, mayor debería ser dicha mejora. Por qué el mejor desempeño no se logra con los 500 hilos?, cómo se compara este desempeño cuando se usan 200?. 
 
+*Teniendo en cuenta las pruebas hechas con un gran número de hilos realizadas, que aunque existe una mejora en términos de rendimiento, se llegara a un punto en la que la mejora será cada vez más pequeña, debido a que la fracción P/n de la formula será cada vez más pequeña debido a que n será más grande, por lo que deducimos que mientras más cantidad de hilos llegaremos a un límite en cuanto a mejora de rendimiento. Al usar 200 hilos tenemos un mejor rendimiento que con 500 debido a que la fracción P/n será más grande en comparación si usamos 500 hilos. aunque el mejoramiento puede ser sutil debido a que la fórmula también depende de una variable P.*
+
 2. Cómo se comporta la solución usando tantos hilos de procesamiento como núcleos comparado con el resultado de usar el doble de éste?.
 
+*En teoría utilizar el doble de hilos que núcleos disminuirá el tiempo de ejecucion como observamos haciendo las pruebas. Pero en la mayoría de los casos la mejora no sería tan significativa debido al valor que pueda tomar P.*
+
 3. De acuerdo con lo anterior, si para este problema en lugar de 100 hilos en una sola CPU se pudiera usar 1 hilo en cada una de 100 máquinas hipotéticas, la ley de Amdahls se aplicaría mejor?. Si en lugar de esto se usaran c hilos en 100/c máquinas distribuidas (siendo c es el número de núcleos de dichas máquinas), se mejoraría?. Explique su respuesta.
+
+*Si tuviéramos 1 hilo corriendo en cada máquina, la ley de Amdahls aplicaría ya que n al ser igual al número de máquinas se tendría que la fracción P sería igual a 1, por lo que la mejora de rendimiento sería bastante alta*
+
+* si tuviéramos c hilos corriendo en 100/c maquinas existiría una mejora de rendimiento que dependería de cómo se distribuye la carga de hilos entre las maquinas ya que según la ley de Amdhal la distribución de carga en múltiples maquinas aumenta el rendimiento*
+
+
 
 
 
