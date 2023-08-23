@@ -4,6 +4,9 @@
 ## Ejercicio Introducción al paralelismo - Hilos - Caso BlackListSearch
 
 
+##ESTUDIANTES: Nicolás Castro Jaramillo y Sergio Andres Gonzales
+
+
 ### Dependencias:
 ####   Lecturas:
 *  [Threads in Java](http://beginnersbook.com/2013/03/java-threads/)  (Hasta 'Ending Threads')
