@@ -329,6 +329,15 @@ public class HostBlackListsValidator {
 ```
 
 
+Ip encontrada en las blacklist
+![image](https://github.com/cattus09/ARSW_lab_1/assets/98556822/8bb17368-0688-4995-bb83-3d324d1343a5)
+
+
+Ip no encontrada en las blacklist
+![image](https://github.com/cattus09/ARSW_lab_1/assets/98556822/bad5d2ce-21a7-407b-b7f2-6341f6b9ca13)
+
+
+
 **Parte II.I Para discutir la próxima clase (NO para implementar aún)**
 
 La estrategia de paralelismo antes implementada es ineficiente en ciertos casos, pues la búsqueda se sigue realizando aún cuando los N hilos (en su conjunto) ya hayan encontrado el número mínimo de ocurrencias requeridas para reportar al servidor como malicioso. Cómo se podría modificar la implementación para minimizar el número de consultas en estos casos?, qué elemento nuevo traería esto al problema?
