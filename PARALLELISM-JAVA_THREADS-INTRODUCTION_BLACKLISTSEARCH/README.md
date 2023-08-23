@@ -4,7 +4,7 @@
 ## Ejercicio Introducción al paralelismo - Hilos - Caso BlackListSearch
 
 
-##ESTUDIANTES: Nicolás Castro Jaramillo y Sergio Andres Gonzales
+## ESTUDIANTES: Nicolás Castro Jaramillo y Sergio Andres Gonzales
 
 
 ### Dependencias:
