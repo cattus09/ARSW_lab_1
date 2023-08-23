@@ -346,11 +346,25 @@ La estrategia de paralelismo antes implementada es ineficiente en ciertos casos,
 
 A partir de lo anterior, implemente la siguiente secuencia de experimentos para realizar las validación de direcciones IP dispersas (por ejemplo 202.24.34.55), tomando los tiempos de ejecución de los mismos (asegúrese de hacerlos en la misma máquina):
 
+Nucleos:
+![image](https://github.com/cattus09/ARSW_lab_1/assets/98556822/d963557f-a44e-4483-b1d6-98710a1f68c8)
+
+
 1. Un solo hilo.
-2. Tantos hilos como núcleos de procesamiento (haga que el programa determine esto haciendo uso del [API Runtime](https://docs.oracle.com/javase/7/docs/api/java/lang/Runtime.html)).
+![image](https://github.com/cattus09/ARSW_lab_1/assets/98556822/c83e34f9-3efb-4063-9dca-9d81f724abf5)
+
+2. Tantos hilos como núcleos de procesamiento (haga que el programa determine esto haciendo uso del [API Runtime]
+![image](https://github.com/cattus09/ARSW_lab_1/assets/98556822/6d1a77f3-867e-4b3a-ac66-246049146a35)
+
 3. Tantos hilos como el doble de núcleos de procesamiento.
+![image](https://github.com/cattus09/ARSW_lab_1/assets/98556822/07c7df85-833d-4acf-8b97-53edbae13aff)
+
 4. 50 hilos.
+![image](https://github.com/cattus09/ARSW_lab_1/assets/98556822/25cf8299-ae46-427f-946d-4ef66a8eab7e)
+
 5. 100 hilos.
+![image](https://github.com/cattus09/ARSW_lab_1/assets/98556822/9e9c5048-9a41-490e-ab86-cbd643ebb093)
+
 
 Al iniciar el programa ejecute el monitor jVisualVM, y a medida que corran las pruebas, revise y anote el consumo de CPU y de memoria en cada caso. ![](img/jvisualvm.png)
 
