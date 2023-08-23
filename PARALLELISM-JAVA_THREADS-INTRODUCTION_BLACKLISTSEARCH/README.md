@@ -389,7 +389,7 @@ Con lo anterior, y con los tiempos de ejecución dados, haga una gráfica de tie
 
 *Si tuviéramos 1 hilo corriendo en cada máquina, la ley de Amdahls aplicaría ya que n al ser igual al número de máquinas se tendría que la fracción P sería igual a 1, por lo que la mejora de rendimiento sería bastante alta*
 
-* si tuviéramos c hilos corriendo en 100/c maquinas existiría una mejora de rendimiento que dependería de cómo se distribuye la carga de hilos entre las maquinas ya que según la ley de Amdhal la distribución de carga en múltiples maquinas aumenta el rendimiento*
+*si tuviéramos c hilos corriendo en 100/c maquinas existiría una mejora de rendimiento que dependería de cómo se distribuye la carga de hilos entre las maquinas ya que según la ley de Amdhal la distribución de carga en múltiples maquinas aumenta el rendimiento*
 
 
 
