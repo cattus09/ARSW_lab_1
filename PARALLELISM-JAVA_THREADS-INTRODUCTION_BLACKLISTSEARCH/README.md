@@ -146,11 +146,196 @@ Para 'refactorizar' este código, y hacer que explote la capacidad multi-núcleo
 
 1. Cree una clase de tipo Thread que represente el ciclo de vida de un hilo que haga la búsqueda de un segmento del conjunto de servidores disponibles. Agregue a dicha clase un método que permita 'preguntarle' a las instancias del mismo (los hilos) cuantas ocurrencias de servidores maliciosos ha encontrado o encontró.
 
+
+```
+package edu.eci.arsw.blacklistvalidator;
+
+import edu.eci.arsw.spamkeywordsdatasource.HostBlacklistsDataSourceFacade;
+
+import java.util.LinkedList;
+
+
+public class BlackListThread extends Thread {
+
+    private final int inicio;
+    private final int destino;
+    private final String ip;
+    private int ocurrencesCount;
+    private HostBlacklistsDataSourceFacade skds;
+    private LinkedList<Integer> blackListOcurrences;
+    private static final int BLACK_LIST_ALARM_COUNT = 5;
+
+    public BlackListThread(int inicio, int destino, String ip) {
+        // buscar en un segmento específico de servidores utilizando el rango de índices 
+        this.inicio = inicio;
+        this.destino = destino;
+        this.ip = ip;
+        this.ocurrencesCount = 0;
+        this.skds = HostBlacklistsDataSourceFacade.getInstance();
+        this.blackListOcurrences = new LinkedList<>();
+    }
+
+    public void run() {
+        
+        // si el numero de ocurrencias es mayor a 5, es no confiable
+        for (int i = inicio; i < destino && ocurrencesCount < BLACK_LIST_ALARM_COUNT ; i++) {
+            if (skds.isInBlackListServer(i, ip)) {
+                blackListOcurrences.add(i);
+                ocurrencesCount++;
+            }
+        }
+    }
+
+    public int getOccurrencesCount() {
+        return ocurrencesCount;
+    }
+
+}
+```
+
 2. Agregue al método 'checkHost' un parámetro entero N, correspondiente al número de hilos entre los que se va a realizar la búsqueda (recuerde tener en cuenta si N es par o impar!). Modifique el código de este método para que divida el espacio de búsqueda entre las N partes indicadas, y paralelice la búsqueda a través de N hilos. Haga que dicha función espere hasta que los N hilos terminen de resolver su respectivo sub-problema, agregue las ocurrencias encontradas por cada hilo a la lista que retorna el método, y entonces calcule (sumando el total de ocurrencuas encontradas por cada hilo) si el número de ocurrencias es mayor o igual a _BLACK_LIST_ALARM_COUNT_. Si se da este caso, al final se DEBE reportar el host como confiable o no confiable, y mostrar el listado con los números de las listas negras respectivas. Para lograr este comportamiento de 'espera' revise el método [join](https://docs.oracle.com/javase/tutorial/essential/concurrency/join.html) del API de concurrencia de Java. Tenga también en cuenta:
 
 	* Dentro del método checkHost Se debe mantener el LOG que informa, antes de retornar el resultado, el número de listas negras revisadas VS. el número de listas negras total (línea 60). Se debe garantizar que dicha información sea verídica bajo el nuevo esquema de procesamiento en paralelo planteado.
 
 	* Se sabe que el HOST 202.24.34.55 está reportado en listas negras de una forma más dispersa, y que el host 212.24.24.55 NO está en ninguna lista negra.
+
+```
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package edu.eci.arsw.blacklistvalidator;
+
+import edu.eci.arsw.spamkeywordsdatasource.HostBlacklistsDataSourceFacade;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ *
+ * @author hcadavid
+ */
+public class HostBlackListsValidator {
+
+    private static final int BLACK_LIST_ALARM_COUNT=5;
+    
+    /**
+     * Check the given host's IP address in all the available black lists,
+     * and report it as NOT Trustworthy when such IP was reported in at least
+     * BLACK_LIST_ALARM_COUNT lists, or as Trustworthy in any other case.
+     * The search is not exhaustive: When the number of occurrences is equal to
+     * BLACK_LIST_ALARM_COUNT, the search is finished, the host reported as
+     * NOT Trustworthy, and the list of the five blacklists returned.
+     * @param ipaddress suspicious host's IP address.
+     * @return  Blacklists numbers where the given host's IP address was found.
+     */
+    public List<Integer> checkHost(String ipaddress){
+        
+        LinkedList<Integer> blackListOcurrences=new LinkedList<>();
+        
+        int ocurrencesCount=0;
+        
+        HostBlacklistsDataSourceFacade skds=HostBlacklistsDataSourceFacade.getInstance();
+        
+        int checkedListsCount=0;
+        
+        for (int i=0;i<skds.getRegisteredServersCount() && ocurrencesCount<BLACK_LIST_ALARM_COUNT;i++){
+            checkedListsCount++;
+            
+            if (skds.isInBlackListServer(i, ipaddress)){
+                
+                blackListOcurrences.add(i);
+                
+                ocurrencesCount++;
+            }
+        }
+        
+        if (ocurrencesCount>=BLACK_LIST_ALARM_COUNT){
+            skds.reportAsNotTrustworthy(ipaddress);
+        }
+        else{
+            skds.reportAsTrustworthy(ipaddress);
+        }                
+        
+        LOG.log(Level.INFO, "Checked Black Lists:{0} of {1}", new Object[]{checkedListsCount, skds.getRegisteredServersCount()});
+        
+        return blackListOcurrences;
+    }
+    
+    public List<Integer> checkHost(int n, String ipaddress){
+        
+        HostBlacklistsDataSourceFacade skds=HostBlacklistsDataSourceFacade.getInstance();
+        LinkedList<Integer> blackListOcurrences=new LinkedList<>();
+        ArrayList<BlackListThread> hilos = new ArrayList<>();
+        int dimencion = skds.getRegisteredServersCount() / n;
+        int faltantes = skds.getRegisteredServersCount() % n;
+        int ocurrencesCount = 0;
+        int checkedListsCount = 0;
+        int inicio = 0;
+        int fin = 0;
+
+        for (int i = 0; i < n; i ++){
+            fin += dimencion;
+            BlackListThread blackList = new BlackListThread(inicio, fin, ipaddress);
+            inicio = fin;
+            hilos.add(blackList);
+            blackList.start();
+        }
+
+        if(faltantes > 0){
+            BlackListThread blackList = new BlackListThread(inicio, fin + faltantes, ipaddress);
+            hilos.add(blackList);
+            blackList.start();
+        }
+
+        for(BlackListThread h : hilos){
+            try{
+                h.join();
+            } catch (InterruptedException e){
+                e.printStackTrace();
+            }
+        }
+        
+        for (int i=0;i<skds.getRegisteredServersCount() && ocurrencesCount<BLACK_LIST_ALARM_COUNT;i++){
+            checkedListsCount++;         
+            if (skds.isInBlackListServer(i, ipaddress)){               
+                blackListOcurrences.add(i);               
+                ocurrencesCount++;
+            }
+        }
+
+        if (ocurrencesCount>=BLACK_LIST_ALARM_COUNT){
+            skds.reportAsNotTrustworthy(ipaddress);
+        }
+        else{
+            skds.reportAsTrustworthy(ipaddress);
+        }                
+        
+        LOG.log(Level.INFO, "Checked Black Lists:{0} of {1}", new Object[]{checkedListsCount, skds.getRegisteredServersCount()});
+        
+        return blackListOcurrences;
+    }
+    
+    private static final Logger LOG = Logger.getLogger(HostBlackListsValidator.class.getName());
+    
+    
+    
+}
+
+```
+
+
+Ip encontrada en las blacklist
+![image](https://github.com/cattus09/ARSW_lab_1/assets/98556822/8bb17368-0688-4995-bb83-3d324d1343a5)
+
+
+Ip no encontrada en las blacklist
+![image](https://github.com/cattus09/ARSW_lab_1/assets/98556822/bad5d2ce-21a7-407b-b7f2-6341f6b9ca13)
+
 
 
 **Parte II.I Para discutir la próxima clase (NO para implementar aún)**
@@ -161,11 +346,25 @@ La estrategia de paralelismo antes implementada es ineficiente en ciertos casos,
 
 A partir de lo anterior, implemente la siguiente secuencia de experimentos para realizar las validación de direcciones IP dispersas (por ejemplo 202.24.34.55), tomando los tiempos de ejecución de los mismos (asegúrese de hacerlos en la misma máquina):
 
+Nucleos:
+![image](https://github.com/cattus09/ARSW_lab_1/assets/98556822/d963557f-a44e-4483-b1d6-98710a1f68c8)
+
+
 1. Un solo hilo.
-2. Tantos hilos como núcleos de procesamiento (haga que el programa determine esto haciendo uso del [API Runtime](https://docs.oracle.com/javase/7/docs/api/java/lang/Runtime.html)).
+![image](https://github.com/cattus09/ARSW_lab_1/assets/98556822/c83e34f9-3efb-4063-9dca-9d81f724abf5)
+
+2. Tantos hilos como núcleos de procesamiento (haga que el programa determine esto haciendo uso del [API Runtime]
+![image](https://github.com/cattus09/ARSW_lab_1/assets/98556822/6d1a77f3-867e-4b3a-ac66-246049146a35)
+
 3. Tantos hilos como el doble de núcleos de procesamiento.
+![image](https://github.com/cattus09/ARSW_lab_1/assets/98556822/07c7df85-833d-4acf-8b97-53edbae13aff)
+
 4. 50 hilos.
+![image](https://github.com/cattus09/ARSW_lab_1/assets/98556822/25cf8299-ae46-427f-946d-4ef66a8eab7e)
+
 5. 100 hilos.
+![image](https://github.com/cattus09/ARSW_lab_1/assets/98556822/9e9c5048-9a41-490e-ab86-cbd643ebb093)
+
 
 Al iniciar el programa ejecute el monitor jVisualVM, y a medida que corran las pruebas, revise y anote el consumo de CPU y de memoria en cada caso. ![](img/jvisualvm.png)
 
